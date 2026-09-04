@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@google/gemini-cli": "^0.58.0",
+    "@openai/codex": "^0.153.2",
+    "opencode-ai": "^1.18.28"
+  },
+  "allowScripts": {
+    "opencode-ai@1.18.28": true,
+    "@github/keytar@7.10.6": true
+  }
+}
