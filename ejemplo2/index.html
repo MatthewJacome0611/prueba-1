@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Formulario accesible de registro para una jornada de aprendizaje.">
+  <title>Registro accesible | Jornada de aprendizaje</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+  <header class="site-header">
+    <div class="container">
+      <p class="eyebrow">Jornada de aprendizaje · 2026</p>
+      <h1>Reserva tu lugar</h1>
+      <p class="intro">Completa este formulario para personalizar tu experiencia. Los campos marcados como obligatorios deben rellenarse.</p>
+    </div>
+  </header>
+
+  <main id="contenido" class="container">
+    <section class="form-section" aria-labelledby="registro-titulo">
+      <div class="section-heading">
+        <p class="section-label">Registro</p>
+        <h2 id="registro-titulo">Cuéntanos sobre ti</h2>
+      </div>
+
+      <form action="#" method="post" enctype="multipart/form-data">
+        <fieldset>
+          <legend>Información de contacto</legend>
+          <p class="required-note"><span aria-hidden="true">*</span> Campo obligatorio</p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="nombre">Nombre completo <span aria-hidden="true">*</span></label>
+              <input id="nombre" name="nombre" type="text" autocomplete="name" required aria-describedby="nombre-ayuda nombre-error">
+              <small id="nombre-ayuda" class="help">Escribe tu nombre y apellidos.</small>
+              <span id="nombre-error" class="error" role="alert">Indica tu nombre completo.</span>
+            </div>
+
+            <div class="field">
+              <label for="correo">Correo electrónico <span aria-hidden="true">*</span></label>
+              <input id="correo" name="correo" type="email" autocomplete="email" required aria-describedby="correo-ayuda correo-error">
+              <small id="correo-ayuda" class="help">Usaremos esta dirección para confirmar tu registro.</small>
+              <span id="correo-error" class="error" role="alert">Introduce un correo electrónico válido.</span>
+            </div>
+
+            <div class="field">
+              <label for="sitio">Sitio web o portafolio</label>
+              <input id="sitio" name="sitio" type="url" inputmode="url" autocomplete="url" aria-describedby="sitio-ayuda">
+              <small id="sitio-ayuda" class="help">Incluye la dirección completa, por ejemplo https://ejemplo.com.</small>
+            </div>
+
+            <div class="field">
+              <label for="telefono">Teléfono <span aria-hidden="true">*</span></label>
+              <input id="telefono" name="telefono" type="tel" inputmode="tel" autocomplete="tel" pattern="[0-9+() -]{7,20}" required aria-describedby="telefono-ayuda telefono-error">
+              <small id="telefono-ayuda" class="help">Acepta números, espacios, paréntesis, guiones y el signo +.</small>
+              <span id="telefono-error" class="error" role="alert">Introduce un teléfono válido.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Preferencias de la jornada</legend>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="fecha">Fecha preferida <span aria-hidden="true">*</span></label>
+              <input id="fecha" name="fecha" type="date" min="2026-10-01" max="2026-12-31" required aria-describedby="fecha-ayuda fecha-error">
+              <small id="fecha-ayuda" class="help">Selecciona una fecha entre octubre y diciembre de 2026.</small>
+              <span id="fecha-error" class="error" role="alert">Selecciona una fecha dentro del periodo indicado.</span>
+            </div>
+
+            <div class="field">
+              <label for="experiencia">Años de experiencia <span aria-hidden="true">*</span></label>
+              <input id="experiencia" name="experiencia" type="number" min="0" max="60" step="1" required aria-describedby="experiencia-ayuda experiencia-error">
+              <small id="experiencia-ayuda" class="help">Escribe un número entero entre 0 y 60.</small>
+              <span id="experiencia-error" class="error" role="alert">Indica un valor entre 0 y 60.</span>
+            </div>
+
+            <div class="field field-full">
+              <label for="interes">Nivel de interés en futuras actividades</label>
+              <output id="interes-valor" for="interes">5 de 10</output>
+              <input id="interes" name="interes" type="range" min="0" max="10" value="5" aria-describedby="interes-ayuda">
+              <small id="interes-ayuda" class="help">Mueve el control para indicar tu interés.</small>
+            </div>
+          </div>
+
+          <div class="choice-group" role="group" aria-labelledby="modalidad-label">
+            <p id="modalidad-label" class="group-label">Modalidad preferida <span aria-hidden="true">*</span></p>
+            <div class="choices">
+              <input id="modalidad-presencial" name="modalidad" type="radio" value="presencial" required aria-describedby="modalidad-label">
+              <label for="modalidad-presencial">Presencial</label>
+              <input id="modalidad-online" name="modalidad" type="radio" value="online" aria-describedby="modalidad-label">
+              <label for="modalidad-online">En línea</label>
+              <input id="modalidad-hibrida" name="modalidad" type="radio" value="hibrida" aria-describedby="modalidad-label">
+              <label for="modalidad-hibrida">Híbrida</label>
+            </div>
+          </div>
+
+          <div class="choice-group" role="group" aria-labelledby="temas-label">
+            <p id="temas-label" class="group-label">Temas que te interesan</p>
+            <div class="choices">
+              <input id="tema-accesibilidad" name="temas" type="checkbox" value="accesibilidad" aria-describedby="temas-label">
+              <label for="tema-accesibilidad">Accesibilidad web</label>
+              <input id="tema-css" name="temas" type="checkbox" value="css" aria-describedby="temas-label">
+              <label for="tema-css">CSS moderno</label>
+              <input id="tema-ux" name="temas" type="checkbox" value="ux" aria-describedby="temas-label">
+              <label for="tema-ux">Experiencia de usuario</label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Detalles adicionales</legend>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="avatar">Imagen de perfil</label>
+              <input id="avatar" name="avatar" type="file" accept="image/png,image/jpeg" aria-describedby="avatar-ayuda">
+              <small id="avatar-ayuda" class="help">Opcional. PNG o JPG, máximo 5 MB.</small>
+            </div>
+
+            <div class="field">
+              <label for="color">Color de tu acreditación</label>
+              <input id="color" name="color" type="color" value="#2364aa" aria-describedby="color-ayuda">
+              <small id="color-ayuda" class="help">Elige un color para identificar tu acreditación.</small>
+            </div>
+
+            <div class="field field-full">
+              <label for="comentarios">Comentarios o necesidades de accesibilidad</label>
+              <textarea id="comentarios" name="comentarios" rows="5" maxlength="500" aria-describedby="comentarios-ayuda"></textarea>
+              <small id="comentarios-ayuda" class="help">Comparte cualquier información que nos ayude a prepararnos (máximo 500 caracteres).</small>
+            </div>
+          </div>
+
+          <input id="consentimiento" name="consentimiento" type="checkbox" required aria-describedby="consentimiento-ayuda consentimiento-error">
+          <label class="consent" for="consentimiento">Acepto recibir la confirmación de mi registro. <span aria-hidden="true">*</span></label>
+          <small id="consentimiento-ayuda" class="help">Puedes cancelar futuras comunicaciones en cualquier momento.</small>
+          <span id="consentimiento-error" class="error" role="alert">Debes aceptar para continuar.</span>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="submit">Enviar registro</button>
+          <button class="button-secondary" type="reset">Borrar formulario</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Formulario demostrativo construido con HTML5 semántico y criterios de accesibilidad.</p>
+    </div>
+  </footer>
+
+  <script>
+    const range = document.querySelector("#interes");
+    const output = document.querySelector("#interes-valor");
+    range.addEventListener("input", () => {
+      output.value = `${range.value} de 10`;
+    });
+  </script>
+</body>
+</html>
