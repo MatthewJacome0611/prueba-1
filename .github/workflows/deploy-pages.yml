@@ -25,6 +25,8 @@ jobs:
           mkdir -p _site
           cp -R ejemplo1 _site/ejemplo1
           cp -R ejemplo2 _site/ejemplo2
+          mkdir -p "_site/semana 4/ejercicio4"
+          cp -R "semana 4/ejercicio4/." "_site/semana 4/ejercicio4/"
           cp index.html _site/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
