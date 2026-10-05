@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DUEL MARKET - Marketplace Yu-Gi-Oh! (Prototipo IHC)</title>
+  <style>
+    /* PALETA BASADA EN TEORÍA DEL COLOR (Regla 60-30-10) */
+    :root {
+      /* 60% Neutros: Tranquilidad y profesionalismo */
+      --bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --gray-light: #e9ecef;
+      --gray-border: #ced4da;
+
+      /* 30% Estructura y Seguridad: Azul marino y Negro */
+      --nav-blue: #0f2a4a;
+      --text-main: #1a1a1a;
+      --text-muted: #555555;
+
+      /* 10% Acento: Naranja (Energía/Entusiasmo/CTA) */
+      --accent-orange: #d96b00;
+      --accent-orange-hover: #b35600;
+
+      /* Semánticos funcionales: Verde (Éxito/Dinero) y Rojo (Error/Alerta) */
+      --success-green: #1b7a3e;
+      --danger-red: #c92a2a;
+      --focus-color: #0056b3;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text-main); padding: 1.25rem; line-height: 1.5; }
+
+    /* WCAG 2.2: Foco accesible de alto contraste */
+    :focus-visible { outline: 3px solid var(--focus-color) !important; outline-offset: 3px; }
+
+    header { background: var(--nav-blue); color: #ffffff; padding: 1.25rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    main, aside, section, footer { background: var(--card-bg); border: 1px solid var(--gray-border); border-radius: 6px; padding: 1.25rem; margin-bottom: 1rem; }
+
+    .header-bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .brand-title { font-size: 1.4rem; font-weight: bold; cursor: pointer; letter-spacing: 1px; color: #ffffff; }
+    .search-group { display: flex; gap: 0.5rem; flex: 1; max-width: 500px; }
+
+    input, select { font-family: inherit; padding: 0.55rem; border: 1px solid var(--gray-border); border-radius: 4px; background: #fff; font-size: 0.9rem; }
+    input:focus, select:focus { border-color: var(--focus-color); }
+
+    /* Botones primarios y secundarios */
+    button { font-family: inherit; cursor: pointer; font-weight: bold; border-radius: 4px; border: none; padding: 0.6rem 1rem; transition: background 0.2s ease; }
+    .btn-accent { background: var(--accent-orange); color: #ffffff; }
+    .btn-accent:hover { background: var(--accent-orange-hover); }
+    .btn-secondary { background: var(--gray-light); color: var(--text-main); border: 1px solid var(--gray-border); }
+    .btn-secondary:hover { background: #dde2e6; }
+    .btn-cart { background: #ffffff; color: var(--nav-blue); }
+    .btn-cart:hover { background: var(--gray-light); }
+
+    /* Stepper / Indicador de estado (Heurística 1) */
+    .stepper { display: flex; gap: 0.5rem; list-style: none; margin-top: 1rem; font-size: 0.85rem; flex-wrap: wrap; }
+    .stepper li { padding: 0.35rem 0.75rem; border-radius: 4px; background: rgba(255,255,255,0.15); color: #e0e0e0; }
+    .stepper li.active { background: var(--accent-orange); color: #ffffff; font-weight: bold; }
+
+    /* Catálogo y Filtros */
+    .catalog-layout { display: grid; grid-template-columns: 240px 1fr; gap: 1.25rem; }
+    @media (max-width: 840px) { .catalog-layout { grid-template-columns: 1fr; } }
+
+    .filters-sidebar fieldset { border: 1px solid var(--gray-border); border-radius: 4px; padding: 0.75rem; margin-bottom: 0.75rem; }
+    .filters-sidebar legend { font-weight: bold; font-size: 0.85rem; color: var(--nav-blue); padding: 0 0.3rem; }
+    .filters-sidebar label { display: block; margin: 0.25rem 0; cursor: pointer; font-size: 0.88rem; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.25rem; }
+    .card-box { border: 1px solid var(--gray-border); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; justify-content: space-between; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card-box:hover { border-color: var(--accent-orange); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+    .card-img-wrap { height: 210px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 4px; overflow: hidden; margin-bottom: 0.6rem; }
+    .card-img-wrap img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .price-tag { color: var(--success-green); font-size: 1.1rem; font-weight: bold; }
+
+    /* Detalle de Carta */
+    .detail-layout { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
+    @media (max-width: 840px) { .detail-layout { grid-template-columns: 1fr; } }
+    .stats-table, .sellers-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.88rem; }
+    .stats-table td, .sellers-table th, .sellers-table td { border: 1px solid var(--gray-border); padding: 0.6rem; text-align: left; }
+    .sellers-table th { background: var(--gray-light); color: var(--nav-blue); }
+
+    /* Checkout y Pagos */
+    .checkout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    @media (max-width: 840px) { .checkout-grid { grid-template-columns: 1fr; } }
+    .form-group { margin-bottom: 0.85rem; display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group label { font-weight: bold; font-size: 0.85rem; color: var(--text-main); }
+    .form-error { color: var(--danger-red); font-size: 0.8rem; display: none; font-weight: bold; }
+    .invalid-input { border-color: var(--danger-red) !important; background-color: #fff5f5 !important; }
+
+    .payment-methods { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .payment-btn { flex: 1; padding: 0.6rem; font-weight: bold; border: 1px solid var(--gray-border); background: var(--gray-light); color: var(--text-main); border-radius: 4px; }
+    .payment-btn.selected { background: var(--nav-blue); color: #ffffff; border-color: var(--nav-blue); }
+
+    .breadcrumbs { font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-muted); }
+    #live-feedback { min-height: 1.8rem; font-weight: bold; color: var(--success-green); padding: 0.25rem 0; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO CON AZUL MARINO (Confianza, Seguridad y Calidad) -->
+  <header role="banner">
+    <div class="header-bar">
+      <span class="brand-title" role="link" tabindex="0" onclick="irACatalogo()">DUEL MARKET TCG</span>
+
+      <div class="search-group" role="search">
+        <label for="search-input" style="position:absolute;left:-9999px;">Buscar carta</label>
+        <input type="text" id="search-input" placeholder="Buscar: Dark Magician, Ash, Mirror..." style="width:100%;" onkeyup="if(event.key==='Enter') filtrar()">
+        <button class="btn-accent" onclick="filtrar()">Buscar</button>
+      </div>
+
+      <button id="cart-btn" class="btn-cart" onclick="irACarrito()" aria-label="Abrir Carrito">
+        🛒 Carrito (<span id="cart-count">0</span>)
+      </button>
+    </div>
+
+    <!-- Stepper guiado con Naranja de Acento -->
+    <nav aria-label="Progreso del flujo">
+      <ol class="stepper">
+        <li id="step-catalog" class="active">1. Búsqueda y Catálogo</li>
+        <li id="step-detail">2. Detalle y Vendedores</li>
+        <li id="step-cart">3. Carrito y Pago</li>
+        <li id="step-success">4. Confirmación</li>
+      </ol>
+    </nav>
+  </header>
+
+  <div id="live-feedback" role="status" aria-live="polite"></div>
+
+  <!-- PANTALLA 1: CATÁLOGO Y FILTROS -->
+  <main id="view-catalog" class="catalog-layout">
+    <aside class="filters-sidebar" aria-label="Filtros de búsqueda">
+      <h3 style="color:var(--nav-blue); margin-bottom:0.5rem;">Filtros de Búsqueda</h3>
+      <fieldset>
+        <legend>Tipo de Carta</legend>
+        <label><input type="radio" name="filter-type" value="ALL" checked onchange="filtrar()"> Todos</label>
+        <label><input type="radio" name="filter-type" value="Monstruo" onchange="filtrar()"> Monstruos</label>
+        <label><input type="radio" name="filter-type" value="Mágica" onchange="filtrar()"> Mágicas</label>
+        <label><input type="radio" name="filter-type" value="Trampa" onchange="filtrar()"> Trampas</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Atributo</legend>
+        <label><input type="radio" name="filter-attr" value="ALL" checked onchange="filtrar()"> Todos</label>
+        <label><input type="radio" name="filter-attr" value="OSCURIDAD" onchange="filtrar()"> OSCURIDAD</label>
+        <label><input type="radio" name="filter-attr" value="LUZ" onchange="filtrar()"> LUZ</label>
+        <label><input type="radio" name="filter-attr" value="FUEGO" onchange="filtrar()"> FUEGO</label>
+      </fieldset>
+
+      <button class="btn-secondary" style="width:100%; margin-top:0.4rem;" onclick="resetFiltros()">Restablecer Filtros</button>
+    </aside>
+
+    <section aria-label="Resultados de cartas">
+      <h2 style="color:var(--nav-blue); margin-bottom:0.25rem;">Catálogo Yu-Gi-Oh!</h2>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Artículos oficiales en venta por tiendas verificadas:</p>
+      <div class="card-grid" id="grid-cards"></div>
+    </section>
+  </main>
+
+  <!-- PANTALLA 2: DETALLE DE LA CARTA Y VENDEDORES -->
+  <section id="view-detail" class="hidden" aria-label="Detalle de carta y vendedores">
+    <div class="breadcrumbs">
+      <button class="btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="irACatalogo()">← Catálogo</button> &gt; <strong id="detail-name-crumb">Carta</strong>
+    </div>
+
+    <div class="detail-layout">
+      <article style="border: 1px solid var(--gray-border); border-radius:6px; padding: 1rem;">
+        <div class="card-img-wrap" style="height:280px;">
+          <img id="detail-img" src="" alt="Vista previa de carta">
+        </div>
+        <h2 id="detail-title" style="color:var(--nav-blue); margin-top:0.5rem;">Nombre de Carta</h2>
+        <table class="stats-table">
+          <tr><td><strong>Código Set:</strong></td><td id="detail-code">-</td></tr>
+          <tr><td><strong>Tipo:</strong></td><td id="detail-type">-</td></tr>
+          <tr><td><strong>Nivel / Rango:</strong></td><td id="detail-level">-</td></tr>
+          <tr><td><strong>ATK / DEF:</strong></td><td id="detail-stats">-</td></tr>
+          <tr><td><strong>Atributo:</strong></td><td id="detail-attr">-</td></tr>
+        </table>
+        <div style="background:var(--gray-light); border-left:3px solid var(--accent-orange); padding:0.6rem; margin-top:0.75rem; font-size:0.85rem; border-radius:2px;" id="detail-desc"></div>
+      </article>
+
+      <article>
+        <h3 style="color:var(--nav-blue);">Vendedores en el Mercado</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Heurística 6: Reconocer antes que recordar (transparencia de precios)</p>
+        <table class="sellers-table">
+          <thead>
+            <tr>
+              <th>Vendedor</th>
+              <th>Estado</th>
+              <th>Edición</th>
+              <th>Precio</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="sellers-tbody"></tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <!-- PANTALLA 3: CARRITO Y PASARELA DE PAGO -->
+  <section id="view-cart" class="hidden" aria-label="Resumen de Carrito y Pasarela de Pago">
+    <div class="breadcrumbs">
+      <button class="btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="irACatalogo()">← Seguir Comprando</button>
+    </div>
+
+    <h2 style="color:var(--nav-blue);">Resumen de Compra y Pago</h2>
+
+    <div class="checkout-grid">
+      <div>
+        <h3 style="margin-bottom:0.5rem;">Artículos en el Carrito</h3>
+        <div id="cart-list" style="margin: 0.5rem 0; max-height:260px; overflow-y:auto; border:1px solid var(--gray-border); border-radius:4px; padding:0.6rem;"></div>
+        <p style="font-size: 1.15rem; text-align: right; margin-top: 0.5rem;">Total a Pagar: <span class="price-tag">$<span id="cart-total-val">0.00</span></span></p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:0.5rem;">Método de Pago Seguro</h3>
+        <div class="payment-methods" role="tablist">
+          <button id="tab-card" class="payment-btn selected" onclick="cambiarMetodo('CARD')">💳 Tarjeta</button>
+          <button id="tab-transfer" class="payment-btn" onclick="cambiarMetodo('TRANSFER')">🏦 Transferencia</button>
+        </div>
+
+        <!-- Formulario Tarjeta -->
+        <form id="form-card" onsubmit="event.preventDefault(); validarYPagarTarjeta();">
+          <div class="form-group">
+            <label for="card-name">Nombre del Titular:</label>
+            <input type="text" id="card-name" placeholder="Ej. MATTHEW JACOME" autocomplete="off">
+            <span class="form-error" id="err-name">Ingrese el nombre del titular.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="card-number">Número de Tarjeta (16 dígitos):</label>
+            <input type="text" id="card-number" placeholder="4111222233334444" maxlength="16" oninput="validarSoloNumeros(this)">
+            <span class="form-error" id="err-number">Debe contener exactamente 16 dígitos numéricos.</span>
+          </div>
+
+          <div style="display:flex; gap:0.5rem;">
+            <div class="form-group" style="flex:1;">
+              <label for="card-exp">Expiración (MM/AA):</label>
+              <input type="text" id="card-exp" placeholder="12/28" maxlength="5" oninput="formatearExp(this)">
+              <span class="form-error" id="err-exp">Formato MM/AA requerido.</span>
+            </div>
+
+            <div class="form-group" style="flex:1;">
+              <label for="card-cvv">CVV (3 dígitos):</label>
+              <input type="password" id="card-cvv" placeholder="123" maxlength="3" oninput="validarSoloNumeros(this)">
+              <span class="form-error" id="err-cvv">3 dígitos numéricos.</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-accent" style="width:100%; padding:0.8rem; margin-top:0.5rem; font-size:1rem;">
+            Confirmar y Pagar $<span id="btn-pay-total">0.00</span>
+          </button>
+        </form>
+
+        <!-- Formulario Transferencia -->
+        <div id="form-transfer" class="hidden">
+          <div style="border:1px solid var(--gray-border); border-radius:4px; padding:0.75rem; background:var(--gray-light); font-size:0.85rem;">
+            <p><strong>Banco Pichincha (Cta. Corriente)</strong></p>
+            <p>Cuenta: 2100849201 | Titular: Duel Market S.A.</p>
+          </div>
+          <div class="form-group" style="margin-top:0.75rem;">
+            <label for="transfer-ref">Número de Transferencia / Comprobante:</label>
+            <input type="text" id="transfer-ref" placeholder="Ej. 784512" maxlength="10" oninput="validarSoloNumeros(this)">
+            <span class="form-error" id="err-ref">Ingrese solo números de la referencia.</span>
+          </div>
+          <button type="button" class="btn-accent" style="width:100%; padding:0.8rem; margin-top:0.5rem;" onclick="validarYPagarTransferencia()">
+            Confirmar Transferencia Bancaria
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 4: CONFIRMACIÓN EXITOSA -->
+  <section id="view-success" class="hidden" aria-label="Confirmación de pedido" style="text-align: center; padding: 2.5rem 1rem;">
+    <h2 style="color:var(--success-green); font-size:1.6rem; margin-bottom:0.5rem;">✔ ¡Transacción Realizada con Éxito!</h2>
+    <p style="margin: 1rem 0; font-size: 1.15rem;">Identificador de Pedido: <strong id="order-id" style="color:var(--nav-blue);">#YGO-00000</strong></p>
+    <p id="order-method-feedback" style="color:var(--text-muted);">Método: Tarjeta</p>
+    <p style="margin-top:0.5rem; font-size:0.9rem;">El detalle de envío y recibo ha sido procesado correctamente.</p>
+    <br>
+    <button class="btn-accent" onclick="reiniciarFlujo()">Regresar al Catálogo Principal</button>
+  </section>
+
+  <footer role="contentinfo">
+    <p style="text-align:center; font-size:0.85rem; color:var(--text-muted);">
+      Prototipo Académico de Interacción Humano-Computador | Cumplimiento WCAG 2.2 AA y 10 Heurísticas de Nielsen
+    </p>
+  </footer>
+
+  <script>
+    const cartas = [
+      { id: 1, nombre: "Dark Magician", codigo: "LOB-005", precioMin: 24.50, nivel: "7 ★", tipo: "Monstruo", sub: "Spellcaster / Normal", stats: "2500 / 2100", attr: "OSCURIDAD", desc: "El mago definitivo en términos de ataque y defensa.", img: "https://images.ygoprodeck.com/images/cards/46986414.jpg" },
+      { id: 2, nombre: "Blue-Eyes White Dragon", codigo: "LOB-001", precioMin: 18.00, nivel: "8 ★", tipo: "Monstruo", sub: "Dragon / Normal", stats: "3000 / 2500", attr: "LUZ", desc: "Este legendario dragón es un poderoso motor de destrucción.", img: "https://images.ygoprodeck.com/images/cards/89631139.jpg" },
+      { id: 3, nombre: "Red-Eyes B. Dragon", codigo: "LOB-070", precioMin: 14.75, nivel: "7 ★", tipo: "Monstruo", sub: "Dragon / Normal", stats: "2400 / 2000", attr: "OSCURIDAD", desc: "Un dragón feroz con un ataque letal.", img: "https://images.ygoprodeck.com/images/cards/74677422.jpg" },
+      { id: 4, nombre: "Ash Blossom & Joyous Spring", codigo: "MACR-036", precioMin: 8.50, nivel: "3 ★", tipo: "Monstruo", sub: "Zombie / Tuner / Effect", stats: "0 / 1800", attr: "FUEGO", desc: "Descarta esta carta para negar la adición de cartas del Deck a la mano.", img: "https://images.ygoprodeck.com/images/cards/14558127.jpg" },
+      { id: 5, nombre: "Pot of Greed", codigo: "LOB-119", precioMin: 6.25, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Roba 2 cartas de tu Deck.", img: "https://images.ygoprodeck.com/images/cards/55144522.jpg" },
+      { id: 6, nombre: "Monster Reborn", codigo: "LOB-118", precioMin: 5.40, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Invoca de Modo Especial un monstruo desde cualquier Cementerio a tu campo.", img: "https://images.ygoprodeck.com/images/cards/83764718.jpg" },
+      { id: 7, nombre: "Mirror Force", codigo: "MRD-138", precioMin: 7.80, nivel: "Trampa", tipo: "Trampa", sub: "Trampa Normal", stats: "N/A", attr: "TRAMPA", desc: "Cuando un monstruo adversario ataca: destruye todos sus monstruos en Posición de Ataque.", img: "https://images.ygoprodeck.com/images/cards/44095762.jpg" },
+      { id: 8, nombre: "Exodia the Forbidden One", codigo: "LOB-124", precioMin: 32.00, nivel: "3 ★", tipo: "Monstruo", sub: "Spellcaster / Effect", stats: "1000 / 1000", attr: "OSCURIDAD", desc: "Reúne las 5 partes en mano para declarar victoria instantánea.", img: "https://images.ygoprodeck.com/images/cards/33396948.jpg" }
+    ];
+
+    let carrito = [];
+    let metodoActual = 'CARD';
+
+    function feedback(msg) {
+      const fb = document.getElementById("live-feedback");
+      fb.textContent = msg;
+      setTimeout(() => { fb.textContent = ""; }, 3000);
+    }
+
+    function setStep(id) {
+      document.querySelectorAll('.stepper li').forEach(li => li.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function mostrarVista(vistaId) {
+      ['view-catalog', 'view-detail', 'view-cart', 'view-success'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(vistaId).classList.remove('hidden');
+    }
+
+    function renderCatalogo(lista) {
+      const grid = document.getElementById("grid-cards");
+      grid.innerHTML = "";
+      if (lista.length === 0) {
+        grid.innerHTML = "<p style='color:var(--text-muted);'>No se encontraron cartas que coincidan con la búsqueda.</p>";
+        return;
+      }
+      lista.forEach(c => {
+        const box = document.createElement("article");
+        box.className = "card-box";
+        box.innerHTML = `
+          <div>
+            <div class="card-img-wrap">
+              <img src="${c.img}" alt="Carta ${c.nombre}" loading="lazy">
+            </div>
+            <h4 style="font-size:0.95rem; color:var(--nav-blue);">${c.nombre}</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">${c.codigo} | ${c.attr}</p>
+          </div>
+          <div style="margin-top:0.75rem;">
+            <p style="margin-bottom:0.4rem;">Desde: <span class="price-tag">$${c.precioMin.toFixed(2)}</span></p>
+            <button class="btn-accent" style="width:100%;" onclick="verDetalle(${c.id})" aria-label="Ver vendedores de ${c.nombre}">Ver Vendedores</button>
+          </div>
+        `;
+        grid.appendChild(box);
+      });
+    }
+
+    function filtrar() {
+      const q = document.getElementById("search-input").value.toLowerCase();
+      const tipo = document.querySelector('input[name="filter-type"]:checked').value;
+      const attr = document.querySelector('input[name="filter-attr"]:checked').value;
+
+      const res = cartas.filter(c => {
+        const coincideNombre = c.nombre.toLowerCase().includes(q);
+        const coincideTipo = (tipo === "ALL") || (c.tipo === tipo);
+        const coincideAttr = (attr === "ALL") || (c.attr === attr);
+        return coincideNombre && coincideTipo && coincideAttr;
+      });
+      renderCatalogo(res);
+    }
+
+    function resetFiltros() {
+      document.getElementById("search-input").value = "";
+      document.querySelector('input[name="filter-type"][value="ALL"]').checked = true;
+      document.querySelector('input[name="filter-attr"][value="ALL"]').checked = true;
+      renderCatalogo(cartas);
+    }
+
+    function verDetalle(id) {
+      const c = cartas.find(item => item.id === id);
+      document.getElementById("detail-img").src = c.img;
+      document.getElementById("detail-img").alt = `Imagen de ${c.nombre}`;
+      document.getElementById("detail-title").textContent = c.nombre;
+      document.getElementById("detail-name-crumb").textContent = c.nombre;
+      document.getElementById("detail-code").textContent = c.codigo;
+      document.getElementById("detail-type").textContent = c.sub;
+      document.getElementById("detail-level").textContent = c.nivel;
+      document.getElementById("detail-stats").textContent = c.stats;
+      document.getElementById("detail-attr").textContent = c.attr;
+      document.getElementById("detail-desc").textContent = c.desc;
+
+      const tbody = document.getElementById("sellers-tbody");
+      tbody.innerHTML = `
+        <tr>
+          <td>DuelistShop EC</td>
+          <td>Near Mint (NM)</td>
+          <td>1st Edition</td>
+          <td><strong class="price-tag">$${c.precioMin.toFixed(2)}</strong></td>
+          <td><button class="btn-accent" style="padding:0.4rem 0.75rem; font-size:0.85rem;" onclick="agregarAlCarrito('${c.nombre}', ${c.precioMin}, 'DuelistShop EC')">+ Añadir</button></td>
+        </tr>
+        <tr>
+          <td>CardKingdom UIO</td>
+          <td>Lightly Played (LP)</td>
+          <td>Unlimited</td>
+          <td><strong class="price-tag">$${(c.precioMin * 0.85).toFixed(2)}</strong></td>
+          <td><button class="btn-accent" style="padding:0.4rem 0.75rem; font-size:0.85rem;" onclick="agregarAlCarrito('${c.nombre}', ${(c.precioMin * 0.85).toFixed(2)}, 'CardKingdom UIO')">+ Añadir</button></td>
+        </tr>
+      `;
+
+      mostrarVista('view-detail');
+      setStep('step-detail');
+    }
+
+    function agregarAlCarrito(nombre, precio, vendedor) {
+      carrito.push({ nombre, precio: parseFloat(precio), vendedor });
+      document.getElementById("cart-count").textContent = carrito.length;
+      feedback(`✔ "${nombre}" añadido al carrito.`);
+    }
+
+    function irACatalogo() {
+      mostrarVista('view-catalog');
+      setStep('step-catalog');
+    }
+
+    function irACarrito() {
+      mostrarVista('view-cart');
+      setStep('step-cart');
+      renderCarrito();
+    }
+
+    function renderCarrito() {
+      const cont = document.getElementById("cart-list");
+      const totalSpan = document.getElementById("cart-total-val");
+      const payTotalSpan = document.getElementById("btn-pay-total");
+
+      if (carrito.length === 0) {
+        cont.innerHTML = "<p style='color:var(--text-muted); font-size:0.9rem;'>El carrito está vacío. Agregue cartas desde el catálogo.</p>";
+        totalSpan.textContent = "0.00";
+        payTotalSpan.textContent = "0.00";
+        return;
+      }
+
+      cont.innerHTML = "";
+      let total = 0;
+      carrito.forEach((item, idx) => {
+        total += item.precio;
+        const row = document.createElement("div");
+        row.style = "display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; border-bottom:1px solid var(--gray-border); font-size:0.88rem;";
+        row.innerHTML = `
+          <span><strong>${item.nombre}</strong> ($${item.precio.toFixed(2)})</span>
+          <button class="btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; color:var(--danger-red);" onclick="eliminarDelCarrito(${idx})" aria-label="Quitar ${item.nombre}">Quitar</button>
+        `;
+        cont.appendChild(row);
+      });
+      totalSpan.textContent = total.toFixed(2);
+      payTotalSpan.textContent = total.toFixed(2);
+    }
+
+    function eliminarDelCarrito(idx) {
+      const eliminado = carrito.splice(idx, 1)[0];
+      document.getElementById("cart-count").textContent = carrito.length;
+      renderCarrito();
+      feedback(`ℹ Se removió "${eliminado.nombre}" del carrito.`);
+    }
+
+    function cambiarMetodo(metodo) {
+      metodoActual = metodo;
+      if (metodo === 'CARD') {
+        document.getElementById('tab-card').classList.add('selected');
+        document.getElementById('tab-transfer').classList.remove('selected');
+        document.getElementById('form-card').classList.remove('hidden');
+        document.getElementById('form-transfer').classList.add('hidden');
+      } else {
+        document.getElementById('tab-transfer').classList.add('selected');
+        document.getElementById('tab-card').classList.remove('selected');
+        document.getElementById('form-transfer').classList.remove('hidden');
+        document.getElementById('form-card').classList.add('hidden');
+      }
+    }
+
+    function validarSoloNumeros(input) {
+      input.value = input.value.replace(/\D/g, '');
+    }
+
+    function formatearExp(input) {
+      let v = input.value.replace(/\D/g, '');
+      if (v.length >= 2) {
+        input.value = v.slice(0, 2) + '/' + v.slice(2, 4);
+      } else {
+        input.value = v;
+      }
+    }
+
+    function validarYPagarTarjeta() {
+      if (carrito.length === 0) {
+        alert("El carrito está vacío.");
+        return;
+      }
+
+      const name = document.getElementById("card-name");
+      const num = document.getElementById("card-number");
+      const exp = document.getElementById("card-exp");
+      const cvv = document.getElementById("card-cvv");
+      let valid = true;
+
+      if (name.value.trim().length < 3) { mostrarError(name, "err-name", true); valid = false; } else { mostrarError(name, "err-name", false); }
+      if (num.value.length !== 16) { mostrarError(num, "err-number", true); valid = false; } else { mostrarError(num, "err-number", false); }
+      const expMatch = exp.value.match(/^(0[1-9]|1[0-2])\/\d{2}$/);
+      if (!expMatch) { mostrarError(exp, "err-exp", true); valid = false; } else { mostrarError(exp, "err-exp", false); }
+      if (cvv.value.length !== 3) { mostrarError(cvv, "err-cvv", true); valid = false; } else { mostrarError(cvv, "err-cvv", false); }
+
+      if (valid) {
+        finalizarOrden("Tarjeta de Crédito terminada en " + num.value.slice(-4));
+      }
+    }
+
+    function validarYPagarTransferencia() {
+      if (carrito.length === 0) {
+        alert("El carrito está vacío.");
+        return;
+      }
+      const ref = document.getElementById("transfer-ref");
+      if (ref.value.trim().length < 4) {
+        mostrarError(ref, "err-ref", true);
+      } else {
+        mostrarError(ref, "err-ref", false);
+        finalizarOrden("Transferencia Bancaria (Ref: #" + ref.value + ")");
+      }
+    }
+
+    function mostrarError(input, errId, mostrar) {
+      const errSpan = document.getElementById(errId);
+      if (mostrar) {
+        input.classList.add("invalid-input");
+        errSpan.style.display = "block";
+      } else {
+        input.classList.remove("invalid-input");
+        errSpan.style.display = "none";
+      }
+    }
+
+    function finalizarOrden(metodoTexto) {
+      document.getElementById("order-id").textContent = `#YGO-${Math.floor(10000 + Math.random() * 90000)}`;
+      document.getElementById("order-method-feedback").textContent = `Método registrado: ${metodoTexto}`;
+      mostrarVista('view-success');
+      setStep('step-success');
+      carrito = [];
+      document.getElementById("cart-count").textContent = "0";
+      feedback("¡Pago procesado con éxito!");
+    }
+
+    function reiniciarFlujo() {
+      resetFiltros();
+      irACatalogo();
+    }
+
+    renderCatalogo(cartas);
+  </script>
+</body>
+</html>
