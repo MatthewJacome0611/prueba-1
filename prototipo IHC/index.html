@@ -28,20 +28,36 @@
       --focus-color: #0056b3;
     }
 
+    [data-theme="dark"] {
+      --bg: #151a21;
+      --card-bg: #202833;
+      --gray-light: #303b48;
+      --gray-border: #465363;
+      --nav-blue: #9fc5f4;
+      --text-main: #f1f4f8;
+      --text-muted: #c0c9d4;
+      --accent-orange: #f28c28;
+      --accent-orange-hover: #d96b00;
+      --success-green: #69d391;
+      --danger-red: #ff8585;
+      --focus-color: #8fc5ff;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text-main); padding: 1.25rem; line-height: 1.5; }
 
     /* WCAG 2.2: Foco accesible de alto contraste */
     :focus-visible { outline: 3px solid var(--focus-color) !important; outline-offset: 3px; }
 
-    header { background: var(--nav-blue); color: #ffffff; padding: 1.25rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    header { background: #0f2a4a; color: #ffffff; padding: 1.25rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     main, aside, section, footer { background: var(--card-bg); border: 1px solid var(--gray-border); border-radius: 6px; padding: 1.25rem; margin-bottom: 1rem; }
 
     .header-bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
     .brand-title { font-size: 1.4rem; font-weight: bold; cursor: pointer; letter-spacing: 1px; color: #ffffff; }
     .search-group { display: flex; gap: 0.5rem; flex: 1; max-width: 500px; }
+    .header-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
-    input, select { font-family: inherit; padding: 0.55rem; border: 1px solid var(--gray-border); border-radius: 4px; background: #fff; font-size: 0.9rem; }
+    input, select { font-family: inherit; padding: 0.55rem; border: 1px solid var(--gray-border); border-radius: 4px; background: var(--card-bg); color: var(--text-main); font-size: 0.9rem; }
     input:focus, select:focus { border-color: var(--focus-color); }
 
     /* Botones primarios y secundarios */
@@ -49,9 +65,12 @@
     .btn-accent { background: var(--accent-orange); color: #ffffff; }
     .btn-accent:hover { background: var(--accent-orange-hover); }
     .btn-secondary { background: var(--gray-light); color: var(--text-main); border: 1px solid var(--gray-border); }
-    .btn-secondary:hover { background: #dde2e6; }
-    .btn-cart { background: #ffffff; color: var(--nav-blue); }
+    .btn-secondary:hover { background: var(--gray-border); }
+    .btn-cart { background: #ffffff; color: #0f2a4a; }
     .btn-cart:hover { background: var(--gray-light); }
+    .btn-header { background: rgba(255,255,255,0.14); color: #ffffff; border: 1px solid rgba(255,255,255,0.45); }
+    .favorite-btn { background: var(--gray-light); color: var(--text-main); border: 1px solid var(--gray-border); }
+    .favorite-btn.is-favorite { color: #c92a2a; }
 
     /* Stepper / Indicador de estado (Heurística 1) */
     .stepper { display: flex; gap: 0.5rem; list-style: none; margin-top: 1rem; font-size: 0.85rem; flex-wrap: wrap; }
@@ -67,9 +86,9 @@
     .filters-sidebar label { display: block; margin: 0.25rem 0; cursor: pointer; font-size: 0.88rem; }
 
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.25rem; }
-    .card-box { border: 1px solid var(--gray-border); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; justify-content: space-between; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card-box { border: 1px solid var(--gray-border); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; justify-content: space-between; background: var(--card-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .card-box:hover { border-color: var(--accent-orange); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
-    .card-img-wrap { height: 210px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 4px; overflow: hidden; margin-bottom: 0.6rem; }
+    .card-img-wrap { height: 210px; display: flex; align-items: center; justify-content: center; background: var(--bg); border-radius: 4px; overflow: hidden; margin-bottom: 0.6rem; }
     .card-img-wrap img { max-height: 100%; max-width: 100%; object-fit: contain; }
     .price-tag { color: var(--success-green); font-size: 1.1rem; font-weight: bold; }
 
@@ -87,10 +106,17 @@
     .form-group label { font-weight: bold; font-size: 0.85rem; color: var(--text-main); }
     .form-error { color: var(--danger-red); font-size: 0.8rem; display: none; font-weight: bold; }
     .invalid-input { border-color: var(--danger-red) !important; background-color: #fff5f5 !important; }
+    .address-options { display: flex; gap: 0.5rem; margin: 0.35rem 0 0.75rem; flex-wrap: wrap; }
+    .map-picker { min-height: 240px; position: relative; overflow: hidden; border: 1px solid var(--gray-border); border-radius: 6px; background-color: #dce8d5; background-image: linear-gradient(28deg, transparent 46%, #fff 47%, #fff 52%, transparent 53%), linear-gradient(112deg, transparent 44%, #fff 45%, #fff 50%, transparent 51%), linear-gradient(0deg, transparent 46%, #c2d4b9 47%, #c2d4b9 51%, transparent 52%); }
+    .map-label { position: absolute; color: #253328; font-size: 0.75rem; font-weight: bold; background: rgba(255,255,255,0.85); padding: 0.15rem 0.35rem; border-radius: 3px; }
+    .map-point { position: absolute; transform: translate(-50%, -50%); border: 2px solid #fff; border-radius: 50%; background: #c92a2a; color: #fff; width: 2.2rem; height: 2.2rem; padding: 0; box-shadow: 0 1px 5px rgba(0,0,0,0.4); }
+    .map-point[aria-pressed="true"] { background: #0f2a4a; transform: translate(-50%, -50%) scale(1.18); }
+    .login-dialog { width: min(92vw, 420px); margin: auto; padding: 1.5rem; border: 1px solid var(--gray-border); border-radius: 8px; background: var(--card-bg); color: var(--text-main); }
+    .login-dialog::backdrop { background: rgba(0,0,0,0.65); }
 
     .payment-methods { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     .payment-btn { flex: 1; padding: 0.6rem; font-weight: bold; border: 1px solid var(--gray-border); background: var(--gray-light); color: var(--text-main); border-radius: 4px; }
-    .payment-btn.selected { background: var(--nav-blue); color: #ffffff; border-color: var(--nav-blue); }
+    .payment-btn.selected { background: #0f2a4a; color: #ffffff; border-color: #0f2a4a; }
 
     .breadcrumbs { font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-muted); }
     #live-feedback { min-height: 1.8rem; font-weight: bold; color: var(--success-green); padding: 0.25rem 0; }
@@ -110,9 +136,14 @@
         <button class="btn-accent" onclick="filtrar()">Buscar</button>
       </div>
 
-      <button id="cart-btn" class="btn-cart" onclick="irACarrito()" aria-label="Abrir Carrito">
-        🛒 Carrito (<span id="cart-count">0</span>)
-      </button>
+      <div class="header-actions">
+        <button id="theme-btn" class="btn-header" type="button" onclick="alternarTema()" aria-pressed="false">☾ Modo oscuro</button>
+        <button id="login-btn" class="btn-header" type="button" onclick="abrirAcceso()">Iniciar sesión</button>
+        <button id="favorites-filter" class="btn-header" type="button" onclick="alternarFiltroFavoritos()" aria-pressed="false">♥ Favoritos (<span id="favorite-count">0</span>)</button>
+        <button id="cart-btn" class="btn-cart" onclick="irACarrito()" aria-label="Abrir Carrito">
+          🛒 Carrito (<span id="cart-count">0</span>)
+        </button>
+      </div>
     </div>
 
     <!-- Stepper guiado con Naranja de Acento -->
@@ -154,6 +185,7 @@
     <section aria-label="Resultados de cartas">
       <h2 style="color:var(--nav-blue); margin-bottom:0.25rem;">Catálogo Yu-Gi-Oh!</h2>
       <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Artículos oficiales en venta por tiendas verificadas:</p>
+      <p id="catalog-mode" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;" aria-live="polite"></p>
       <div class="card-grid" id="grid-cards"></div>
     </section>
   </main>
@@ -212,6 +244,35 @@
         <h3 style="margin-bottom:0.5rem;">Artículos en el Carrito</h3>
         <div id="cart-list" style="margin: 0.5rem 0; max-height:260px; overflow-y:auto; border:1px solid var(--gray-border); border-radius:4px; padding:0.6rem;"></div>
         <p style="font-size: 1.15rem; text-align: right; margin-top: 0.5rem;">Total a Pagar: <span class="price-tag">$<span id="cart-total-val">0.00</span></span></p>
+
+        <div style="margin-top:1.25rem;">
+          <h3 style="margin-bottom:0.5rem;">Dirección de entrega</h3>
+          <div class="form-group">
+            <label for="delivery-name">Nombre de quien recibe:</label>
+            <input type="text" id="delivery-name" autocomplete="name" placeholder="Nombre completo">
+            <span class="form-error" id="err-delivery-name">Ingrese el nombre de quien recibe.</span>
+          </div>
+          <div class="form-group">
+            <label for="delivery-address">Calle y dirección:</label>
+            <input type="text" id="delivery-address" autocomplete="street-address" placeholder="Ej. Av. Amazonas y Naciones Unidas" oninput="limpiarSeleccionMapa()">
+            <span class="form-error" id="err-delivery-address">Ingrese una dirección de entrega.</span>
+          </div>
+          <div class="address-options">
+            <button class="btn-secondary" type="button" onclick="mostrarSelectorMapa()">Elegir dirección en el mapa</button>
+          </div>
+          <div id="map-panel" class="hidden">
+            <p style="font-size:0.85rem; margin-bottom:0.4rem;">Selecciona un punto de referencia en Quito (mapa de demostración):</p>
+            <div class="map-picker" role="group" aria-label="Puntos de entrega de demostración en Quito">
+              <span class="map-label" style="top:12%;left:8%;">La Carolina</span>
+              <span class="map-label" style="top:72%;left:62%;">Centro</span>
+              <span class="map-label" style="top:15%;left:66%;">Iñaquito</span>
+              <button class="map-point" type="button" style="top:34%;left:34%;" aria-label="Seleccionar Av. Amazonas y Naciones Unidas, La Carolina" aria-pressed="false" onclick="seleccionarDireccion('Av. Amazonas y Naciones Unidas, La Carolina, Quito', this)">1</button>
+              <button class="map-point" type="button" style="top:50%;left:70%;" aria-label="Seleccionar Av. 6 de Diciembre y Shyris, Iñaquito" aria-pressed="false" onclick="seleccionarDireccion('Av. 6 de Diciembre y Shyris, Iñaquito, Quito', this)">2</button>
+              <button class="map-point" type="button" style="top:76%;left:38%;" aria-label="Seleccionar García Moreno y Chile, Centro Histórico" aria-pressed="false" onclick="seleccionarDireccion('García Moreno y Chile, Centro Histórico, Quito', this)">3</button>
+            </div>
+            <button class="btn-secondary" type="button" style="margin-top:0.5rem;" onclick="ocultarSelectorMapa()">Cerrar mapa</button>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -289,6 +350,28 @@
     </p>
   </footer>
 
+  <dialog id="login-dialog" class="login-dialog" aria-labelledby="login-title">
+    <form id="login-form" onsubmit="event.preventDefault(); iniciarSesion();">
+      <h2 id="login-title" style="color:var(--nav-blue); margin-bottom:0.5rem;">Acceso de demostración</h2>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">Prueba el inicio de sesión con cualquier correo válido y una contraseña de 6 caracteres o más. No se envían datos.</p>
+      <div class="form-group">
+        <label for="login-email">Correo electrónico:</label>
+        <input type="email" id="login-email" autocomplete="email" required>
+        <span class="form-error" id="err-login-email">Ingrese un correo electrónico válido.</span>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Contraseña de prueba:</label>
+        <input type="password" id="login-password" autocomplete="current-password" minlength="6" required>
+        <span class="form-error" id="err-login-password">La contraseña debe tener al menos 6 caracteres.</span>
+      </div>
+      <p id="login-feedback" role="status" style="font-size:0.85rem; margin-bottom:0.75rem;"></p>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button class="btn-secondary" type="button" onclick="cerrarAcceso()">Cancelar</button>
+        <button class="btn-accent" type="submit">Iniciar sesión</button>
+      </div>
+    </form>
+  </dialog>
+
   <script>
     const cartas = [
       { id: 1, nombre: "Dark Magician", codigo: "LOB-005", precioMin: 24.50, nivel: "7 ★", tipo: "Monstruo", sub: "Spellcaster / Normal", stats: "2500 / 2100", attr: "OSCURIDAD", desc: "El mago definitivo en términos de ataque y defensa.", img: "https://images.ygoprodeck.com/images/cards/46986414.jpg" },
@@ -303,6 +386,9 @@
 
     let carrito = [];
     let metodoActual = 'CARD';
+    let favoritos = new Set();
+    let soloFavoritos = false;
+    let usuarioActual = null;
 
     function feedback(msg) {
       const fb = document.getElementById("live-feedback");
@@ -322,11 +408,82 @@
       document.getElementById(vistaId).classList.remove('hidden');
     }
 
+    function alternarTema() {
+      const oscuro = document.documentElement.dataset.theme !== 'dark';
+      document.documentElement.dataset.theme = oscuro ? 'dark' : 'light';
+      const boton = document.getElementById('theme-btn');
+      boton.textContent = oscuro ? '☀ Modo claro' : '☾ Modo oscuro';
+      boton.setAttribute('aria-pressed', String(oscuro));
+    }
+
+    function abrirAcceso() {
+      const dialogo = document.getElementById('login-dialog');
+      document.getElementById('login-feedback').textContent = '';
+      document.getElementById('login-form').reset();
+      if (usuarioActual) {
+        document.getElementById('login-email').value = usuarioActual.email;
+      }
+      dialogo.showModal();
+    }
+
+    function cerrarAcceso() {
+      document.getElementById('login-dialog').close();
+    }
+
+    function iniciarSesion() {
+      const email = document.getElementById('login-email');
+      const password = document.getElementById('login-password');
+      const emailValido = email.validity.valid;
+      const passwordValida = password.value.length >= 6;
+      mostrarError(email, 'err-login-email', !emailValido);
+      mostrarError(password, 'err-login-password', !passwordValida);
+      if (!emailValido || !passwordValida) return;
+
+      usuarioActual = { email: email.value.trim(), nombre: email.value.trim().split('@')[0] };
+      const boton = document.getElementById('login-btn');
+      boton.textContent = `Cerrar sesión (${usuarioActual.nombre})`;
+      boton.onclick = cerrarSesion;
+      cerrarAcceso();
+      feedback(`Sesión de demostración iniciada para ${usuarioActual.email}.`);
+    }
+
+    function cerrarSesion() {
+      usuarioActual = null;
+      const boton = document.getElementById('login-btn');
+      boton.textContent = 'Iniciar sesión';
+      boton.onclick = abrirAcceso;
+      feedback('Se cerró la sesión de demostración.');
+    }
+
+    function alternarFavorito(id) {
+      if (favoritos.has(id)) {
+        favoritos.delete(id);
+      } else {
+        favoritos.add(id);
+      }
+      actualizarCatalogo();
+      feedback(favoritos.has(id) ? 'Carta añadida a favoritos.' : 'Carta eliminada de favoritos.');
+    }
+
+    function alternarFiltroFavoritos() {
+      soloFavoritos = !soloFavoritos;
+      document.getElementById('favorites-filter').setAttribute('aria-pressed', String(soloFavoritos));
+      actualizarCatalogo();
+      mostrarVista('view-catalog');
+      setStep('step-catalog');
+    }
+
+    function actualizarCatalogo() {
+      document.getElementById('favorite-count').textContent = favoritos.size;
+      document.getElementById('catalog-mode').textContent = soloFavoritos ? 'Mostrando tus cartas favoritas.' : '';
+      filtrar();
+    }
+
     function renderCatalogo(lista) {
       const grid = document.getElementById("grid-cards");
       grid.innerHTML = "";
       if (lista.length === 0) {
-        grid.innerHTML = "<p style='color:var(--text-muted);'>No se encontraron cartas que coincidan con la búsqueda.</p>";
+        grid.innerHTML = `<p style="color:var(--text-muted);">${soloFavoritos ? 'Aún no tienes cartas favoritas. Usa el corazón de una carta para guardarla.' : 'No se encontraron cartas que coincidan con la búsqueda.'}</p>`;
         return;
       }
       lista.forEach(c => {
@@ -334,6 +491,7 @@
         box.className = "card-box";
         box.innerHTML = `
           <div>
+            <button class="favorite-btn${favoritos.has(c.id) ? ' is-favorite' : ''}" type="button" style="float:right;" onclick="alternarFavorito(${c.id})" aria-pressed="${favoritos.has(c.id)}" aria-label="${favoritos.has(c.id) ? 'Quitar de' : 'Añadir a'} favoritos: ${c.nombre}">${favoritos.has(c.id) ? '♥' : '♡'}</button>
             <div class="card-img-wrap">
               <img src="${c.img}" alt="Carta ${c.nombre}" loading="lazy">
             </div>
@@ -358,7 +516,8 @@
         const coincideNombre = c.nombre.toLowerCase().includes(q);
         const coincideTipo = (tipo === "ALL") || (c.tipo === tipo);
         const coincideAttr = (attr === "ALL") || (c.attr === attr);
-        return coincideNombre && coincideTipo && coincideAttr;
+        const coincideFavorito = !soloFavoritos || favoritos.has(c.id);
+        return coincideNombre && coincideTipo && coincideAttr && coincideFavorito;
       });
       renderCatalogo(res);
     }
@@ -367,11 +526,14 @@
       document.getElementById("search-input").value = "";
       document.querySelector('input[name="filter-type"][value="ALL"]').checked = true;
       document.querySelector('input[name="filter-attr"][value="ALL"]').checked = true;
-      renderCatalogo(cartas);
+      soloFavoritos = false;
+      document.getElementById('favorites-filter').setAttribute('aria-pressed', 'false');
+      actualizarCatalogo();
     }
 
     function verDetalle(id) {
       const c = cartas.find(item => item.id === id);
+      if (!c) return;
       document.getElementById("detail-img").src = c.img;
       document.getElementById("detail-img").alt = `Imagen de ${c.nombre}`;
       document.getElementById("detail-title").textContent = c.nombre;
@@ -420,6 +582,26 @@
       mostrarVista('view-cart');
       setStep('step-cart');
       renderCarrito();
+    }
+
+    function mostrarSelectorMapa() {
+      document.getElementById('map-panel').classList.remove('hidden');
+    }
+
+    function ocultarSelectorMapa() {
+      document.getElementById('map-panel').classList.add('hidden');
+    }
+
+    function seleccionarDireccion(direccion, boton) {
+      document.getElementById('delivery-address').value = direccion;
+      document.querySelectorAll('.map-point').forEach(punto => punto.setAttribute('aria-pressed', 'false'));
+      boton.setAttribute('aria-pressed', 'true');
+      mostrarError(document.getElementById('delivery-address'), 'err-delivery-address', false);
+      feedback(`Dirección seleccionada: ${direccion}`);
+    }
+
+    function limpiarSeleccionMapa() {
+      document.querySelectorAll('.map-point').forEach(punto => punto.setAttribute('aria-pressed', 'false'));
     }
 
     function renderCarrito() {
@@ -491,6 +673,8 @@
         return;
       }
 
+      if (!validarEntrega()) return;
+
       const name = document.getElementById("card-name");
       const num = document.getElementById("card-number");
       const exp = document.getElementById("card-exp");
@@ -513,6 +697,7 @@
         alert("El carrito está vacío.");
         return;
       }
+      if (!validarEntrega()) return;
       const ref = document.getElementById("transfer-ref");
       if (ref.value.trim().length < 4) {
         mostrarError(ref, "err-ref", true);
@@ -520,6 +705,20 @@
         mostrarError(ref, "err-ref", false);
         finalizarOrden("Transferencia Bancaria (Ref: #" + ref.value + ")");
       }
+    }
+
+    function validarEntrega() {
+      const nombre = document.getElementById('delivery-name');
+      const direccion = document.getElementById('delivery-address');
+      const nombreValido = nombre.value.trim().length >= 3;
+      const direccionValida = direccion.value.trim().length >= 5;
+      mostrarError(nombre, 'err-delivery-name', !nombreValido);
+      mostrarError(direccion, 'err-delivery-address', !direccionValida);
+      if (!nombreValido || !direccionValida) {
+        feedback('Completa el nombre y la dirección de entrega antes de pagar.');
+        return false;
+      }
+      return true;
     }
 
     function mostrarError(input, errId, mostrar) {
@@ -535,7 +734,9 @@
 
     function finalizarOrden(metodoTexto) {
       document.getElementById("order-id").textContent = `#YGO-${Math.floor(10000 + Math.random() * 90000)}`;
-      document.getElementById("order-method-feedback").textContent = `Método registrado: ${metodoTexto}`;
+      const nombreEntrega = document.getElementById('delivery-name').value.trim();
+      const direccionEntrega = document.getElementById('delivery-address').value.trim();
+      document.getElementById("order-method-feedback").textContent = `Método registrado: ${metodoTexto}. Entrega para ${nombreEntrega} en ${direccionEntrega}.`;
       mostrarVista('view-success');
       setStep('step-success');
       carrito = [];
@@ -548,7 +749,7 @@
       irACatalogo();
     }
 
-    renderCatalogo(cartas);
+    actualizarCatalogo();
   </script>
 </body>
 </html>
