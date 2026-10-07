@@ -71,6 +71,9 @@
     .btn-header { background: rgba(255,255,255,0.14); color: #ffffff; border: 1px solid rgba(255,255,255,0.45); }
     .favorite-btn { background: var(--gray-light); color: var(--text-main); border: 1px solid var(--gray-border); }
     .favorite-btn.is-favorite { color: #c92a2a; }
+    .pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+    .pagination button[aria-current="page"] { background: #0f2a4a; color: #ffffff; }
+    .pagination-status { width: 100%; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
     /* Stepper / Indicador de estado (Heurística 1) */
     .stepper { display: flex; gap: 0.5rem; list-style: none; margin-top: 1rem; font-size: 0.85rem; flex-wrap: wrap; }
@@ -140,6 +143,7 @@
         <button id="theme-btn" class="btn-header" type="button" onclick="alternarTema()" aria-pressed="false">☾ Modo oscuro</button>
         <button id="login-btn" class="btn-header" type="button" onclick="abrirAcceso()">Iniciar sesión</button>
         <button id="favorites-filter" class="btn-header" type="button" onclick="alternarFiltroFavoritos()" aria-pressed="false">♥ Favoritos (<span id="favorite-count">0</span>)</button>
+        <button id="voice-btn" class="btn-header" type="button" onclick="alternarLecturaVoz()" aria-pressed="false">🔊 Lectura por voz: desactivada</button>
         <button id="cart-btn" class="btn-cart" onclick="irACarrito()" aria-label="Abrir Carrito">
           🛒 Carrito (<span id="cart-count">0</span>)
         </button>
@@ -187,6 +191,7 @@
       <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Artículos oficiales en venta por tiendas verificadas:</p>
       <p id="catalog-mode" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;" aria-live="polite"></p>
       <div class="card-grid" id="grid-cards"></div>
+      <nav id="catalog-pagination" class="pagination" aria-label="Páginas del catálogo"></nav>
     </section>
   </main>
 
@@ -346,7 +351,7 @@
 
   <footer role="contentinfo">
     <p style="text-align:center; font-size:0.85rem; color:var(--text-muted);">
-      Prototipo Académico de Interacción Humano-Computador | Cumplimiento WCAG 2.2 AA y 10 Heurísticas de Nielsen
+      Prototipo Académico
     </p>
   </footer>
 
@@ -381,14 +386,31 @@
       { id: 5, nombre: "Pot of Greed", codigo: "LOB-119", precioMin: 6.25, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Roba 2 cartas de tu Deck.", img: "https://images.ygoprodeck.com/images/cards/55144522.jpg" },
       { id: 6, nombre: "Monster Reborn", codigo: "LOB-118", precioMin: 5.40, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Invoca de Modo Especial un monstruo desde cualquier Cementerio a tu campo.", img: "https://images.ygoprodeck.com/images/cards/83764718.jpg" },
       { id: 7, nombre: "Mirror Force", codigo: "MRD-138", precioMin: 7.80, nivel: "Trampa", tipo: "Trampa", sub: "Trampa Normal", stats: "N/A", attr: "TRAMPA", desc: "Cuando un monstruo adversario ataca: destruye todos sus monstruos en Posición de Ataque.", img: "https://images.ygoprodeck.com/images/cards/44095762.jpg" },
-      { id: 8, nombre: "Exodia the Forbidden One", codigo: "LOB-124", precioMin: 32.00, nivel: "3 ★", tipo: "Monstruo", sub: "Spellcaster / Effect", stats: "1000 / 1000", attr: "OSCURIDAD", desc: "Reúne las 5 partes en mano para declarar victoria instantánea.", img: "https://images.ygoprodeck.com/images/cards/33396948.jpg" }
+      { id: 8, nombre: "Exodia the Forbidden One", codigo: "LOB-124", precioMin: 32.00, nivel: "3 ★", tipo: "Monstruo", sub: "Spellcaster / Effect", stats: "1000 / 1000", attr: "OSCURIDAD", desc: "Reúne las 5 partes en mano para declarar victoria instantánea.", img: "https://images.ygoprodeck.com/images/cards/33396948.jpg" },
+      { id: 9, nombre: "Cyber Dragon", codigo: "CRV-EN015", precioMin: 4.80, nivel: "5 ★", tipo: "Monstruo", sub: "Machine / Effect", stats: "2100 / 1600", attr: "LUZ", desc: "Si tu adversario controla un monstruo y tú no, puedes invocar esta carta de modo especial.", img: "https://images.ygoprodeck.com/images/cards/70095154.jpg" },
+      { id: 10, nombre: "Stardust Dragon", codigo: "TDGS-EN040", precioMin: 12.25, nivel: "8 ★", tipo: "Monstruo", sub: "Dragon / Synchro / Effect", stats: "2500 / 2000", attr: "LUZ", desc: "Niega efectos que destruyan cartas y puede volver desde el Cementerio.", img: "https://images.ygoprodeck.com/images/cards/44508094.jpg" },
+      { id: 11, nombre: "Kuriboh", codigo: "LOB-009", precioMin: 2.10, nivel: "1 ★", tipo: "Monstruo", sub: "Fiend / Effect", stats: "300 / 200", attr: "OSCURIDAD", desc: "Descártala durante el turno del adversario para reducir a cero el daño de batalla.", img: "https://images.ygoprodeck.com/images/cards/40640057.jpg" },
+      { id: 12, nombre: "Jinzo", codigo: "PSV-000", precioMin: 9.60, nivel: "6 ★", tipo: "Monstruo", sub: "Machine / Effect", stats: "2400 / 1500", attr: "OSCURIDAD", desc: "Mientras esté boca arriba, niega los efectos de Trampa en el campo.", img: "https://images.ygoprodeck.com/images/cards/77585513.jpg" },
+      { id: 13, nombre: "Dark Hole", codigo: "LOB-052", precioMin: 1.75, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Destruye todos los monstruos en el Campo.", img: "https://images.ygoprodeck.com/images/cards/53129443.jpg" },
+      { id: 14, nombre: "Raigeki", codigo: "LOB-052-R", precioMin: 7.50, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Destruye todos los monstruos que controle tu adversario.", img: "https://images.ygoprodeck.com/images/cards/12580477.jpg" },
+      { id: 15, nombre: "Polymerization", codigo: "LOB-059", precioMin: 1.20, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Fusiona monstruos de tu mano o Campo para Invocar un Monstruo de Fusión.", img: "https://images.ygoprodeck.com/images/cards/24094653.jpg" },
+      { id: 16, nombre: "Swords of Revealing Light", codigo: "LOB-101", precioMin: 2.35, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Revela los monstruos boca abajo del adversario y evita sus ataques durante tres turnos.", img: "https://images.ygoprodeck.com/images/cards/72302403.jpg" },
+      { id: 17, nombre: "Torrential Tribute", codigo: "LON-025", precioMin: 5.70, nivel: "Trampa", tipo: "Trampa", sub: "Trampa Normal", stats: "N/A", attr: "TRAMPA", desc: "Cuando se Invoca un monstruo: destruye todos los monstruos en el Campo.", img: "https://images.ygoprodeck.com/images/cards/53582587.jpg" },
+      { id: 18, nombre: "Call of the Haunted", codigo: "PSV-012", precioMin: 1.85, nivel: "Trampa", tipo: "Trampa", sub: "Trampa Continua", stats: "N/A", attr: "TRAMPA", desc: "Invoca de modo especial un monstruo de tu Cementerio en Posición de Ataque.", img: "https://images.ygoprodeck.com/images/cards/97077563.jpg" },
+      { id: 19, nombre: "Harpie's Feather Duster", codigo: "MRL-EN047", precioMin: 11.00, nivel: "Mágica", tipo: "Mágica", sub: "Mágica Normal", stats: "N/A", attr: "MÁGICA", desc: "Destruye todas las cartas Mágicas y de Trampa que controle tu adversario.", img: "https://images.ygoprodeck.com/images/cards/18144506.jpg" },
+      { id: 20, nombre: "Summoned Skull", codigo: "MRD-003", precioMin: 3.45, nivel: "6 ★", tipo: "Monstruo", sub: "Fiend / Normal", stats: "2500 / 1200", attr: "OSCURIDAD", desc: "Un demonio cuya fuerza supera a la de otros monstruos de nivel similar.", img: "https://images.ygoprodeck.com/images/cards/70781052.jpg" }
     ];
 
+    const productosPorPagina = 8;
     let carrito = [];
     let metodoActual = 'CARD';
     let favoritos = new Set();
     let soloFavoritos = false;
     let usuarioActual = null;
+    let paginaActual = 1;
+    let lecturaVozActiva = false;
+    let temporizadorLectura = null;
+    let ultimoElementoLeido = null;
 
     function feedback(msg) {
       const fb = document.getElementById("live-feedback");
@@ -414,6 +436,43 @@
       const boton = document.getElementById('theme-btn');
       boton.textContent = oscuro ? '☀ Modo claro' : '☾ Modo oscuro';
       boton.setAttribute('aria-pressed', String(oscuro));
+    }
+
+    function alternarLecturaVoz() {
+      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+        feedback('La lectura por voz no está disponible en este navegador.');
+        return;
+      }
+      lecturaVozActiva = !lecturaVozActiva;
+      const boton = document.getElementById('voice-btn');
+      boton.setAttribute('aria-pressed', String(lecturaVozActiva));
+      boton.textContent = `🔊 Lectura por voz: ${lecturaVozActiva ? 'activada' : 'desactivada'}`;
+      if (!lecturaVozActiva) {
+        window.speechSynthesis.cancel();
+        clearTimeout(temporizadorLectura);
+        ultimoElementoLeido = null;
+      }
+      feedback(lecturaVozActiva ? 'Lectura por voz activada. Pasa el cursor sobre el contenido.' : 'Lectura por voz desactivada.');
+    }
+
+    function programarLecturaVoz(evento) {
+      if (!lecturaVozActiva) return;
+      const elemento = evento.target.closest('button, a, input, select, textarea, img, h1, h2, h3, h4, p, label, li, td, th, article');
+      if (!elemento || elemento === ultimoElementoLeido || elemento.closest('[hidden], .hidden')) return;
+      const etiqueta = elemento.labels && elemento.labels[0];
+      const texto = elemento.getAttribute('aria-label') || elemento.getAttribute('alt') || (etiqueta && etiqueta.innerText) || elemento.getAttribute('placeholder') || elemento.innerText || elemento.value || '';
+      const textoLimpio = texto.trim().replace(/\s+/g, ' ');
+      if (!textoLimpio) return;
+
+      ultimoElementoLeido = elemento;
+      clearTimeout(temporizadorLectura);
+      temporizadorLectura = setTimeout(() => {
+        if (!lecturaVozActiva || !elemento.isConnected) return;
+        window.speechSynthesis.cancel();
+        const mensaje = new SpeechSynthesisUtterance(textoLimpio);
+        mensaje.lang = 'es-ES';
+        window.speechSynthesis.speak(mensaje);
+      }, 350);
     }
 
     function abrirAcceso() {
@@ -467,6 +526,7 @@
 
     function alternarFiltroFavoritos() {
       soloFavoritos = !soloFavoritos;
+      paginaActual = 1;
       document.getElementById('favorites-filter').setAttribute('aria-pressed', String(soloFavoritos));
       actualizarCatalogo();
       mostrarVista('view-catalog');
@@ -481,12 +541,17 @@
 
     function renderCatalogo(lista) {
       const grid = document.getElementById("grid-cards");
+      const paginacion = document.getElementById('catalog-pagination');
       grid.innerHTML = "";
+      paginacion.innerHTML = "";
       if (lista.length === 0) {
         grid.innerHTML = `<p style="color:var(--text-muted);">${soloFavoritos ? 'Aún no tienes cartas favoritas. Usa el corazón de una carta para guardarla.' : 'No se encontraron cartas que coincidan con la búsqueda.'}</p>`;
         return;
       }
-      lista.forEach(c => {
+      const totalPaginas = Math.ceil(lista.length / productosPorPagina);
+      paginaActual = Math.min(paginaActual, totalPaginas);
+      const inicio = (paginaActual - 1) * productosPorPagina;
+      lista.slice(inicio, inicio + productosPorPagina).forEach(c => {
         const box = document.createElement("article");
         box.className = "card-box";
         box.innerHTML = `
@@ -505,21 +570,67 @@
         `;
         grid.appendChild(box);
       });
+      if (totalPaginas > 1) {
+        const anterior = document.createElement('button');
+        anterior.className = 'btn-secondary';
+        anterior.type = 'button';
+        anterior.textContent = '← Anterior';
+        anterior.disabled = paginaActual === 1;
+        anterior.setAttribute('aria-label', 'Página anterior');
+        anterior.addEventListener('click', () => cambiarPagina(paginaActual - 1));
+        paginacion.appendChild(anterior);
+
+        for (let numero = 1; numero <= totalPaginas; numero += 1) {
+          const boton = document.createElement('button');
+          boton.className = 'btn-secondary';
+          boton.type = 'button';
+          boton.textContent = String(numero);
+          boton.setAttribute('aria-label', `Página ${numero}`);
+          if (numero === paginaActual) boton.setAttribute('aria-current', 'page');
+          boton.addEventListener('click', () => cambiarPagina(numero));
+          paginacion.appendChild(boton);
+        }
+
+        const siguiente = document.createElement('button');
+        siguiente.className = 'btn-secondary';
+        siguiente.type = 'button';
+        siguiente.textContent = 'Siguiente →';
+        siguiente.disabled = paginaActual === totalPaginas;
+        siguiente.setAttribute('aria-label', 'Página siguiente');
+        siguiente.addEventListener('click', () => cambiarPagina(paginaActual + 1));
+        paginacion.appendChild(siguiente);
+
+        const estado = document.createElement('span');
+        estado.className = 'pagination-status';
+        estado.setAttribute('aria-live', 'polite');
+        estado.textContent = `Página ${paginaActual} de ${totalPaginas} · ${lista.length} productos`;
+        paginacion.appendChild(estado);
+      }
+    }
+
+    function cambiarPagina(numero) {
+      paginaActual = numero;
+      renderCatalogo(obtenerCartasFiltradas());
+      document.getElementById('catalog-pagination').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function filtrar() {
+      paginaActual = 1;
+      renderCatalogo(obtenerCartasFiltradas());
+    }
+
+    function obtenerCartasFiltradas() {
       const q = document.getElementById("search-input").value.toLowerCase();
       const tipo = document.querySelector('input[name="filter-type"]:checked').value;
       const attr = document.querySelector('input[name="filter-attr"]:checked').value;
 
-      const res = cartas.filter(c => {
+      return cartas.filter(c => {
         const coincideNombre = c.nombre.toLowerCase().includes(q);
         const coincideTipo = (tipo === "ALL") || (c.tipo === tipo);
         const coincideAttr = (attr === "ALL") || (c.attr === attr);
         const coincideFavorito = !soloFavoritos || favoritos.has(c.id);
         return coincideNombre && coincideTipo && coincideAttr && coincideFavorito;
       });
-      renderCatalogo(res);
     }
 
     function resetFiltros() {
@@ -528,6 +639,8 @@
       document.querySelector('input[name="filter-attr"][value="ALL"]').checked = true;
       soloFavoritos = false;
       document.getElementById('favorites-filter').setAttribute('aria-pressed', 'false');
+      document.addEventListener('pointerover', programarLecturaVoz);
+      document.addEventListener('focusin', programarLecturaVoz);
       actualizarCatalogo();
     }
 
@@ -749,6 +862,8 @@
       irACatalogo();
     }
 
+    document.addEventListener('pointerover', programarLecturaVoz);
+    document.addEventListener('focusin', programarLecturaVoz);
     actualizarCatalogo();
   </script>
 </body>
